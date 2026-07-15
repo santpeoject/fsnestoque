@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📦 FUSION</title>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI', Roboto, sans-serif}
+        :root{--neon:#ffffff;--fundo:#050505;--caixa:#0a0a0a;--borda:#222;--destaque:#00eeff;--erro:#ff3333;--sucesso:#00ff88}
+        
+        body{background:var(--fundo);color:var(--neon);min-height:100vh;padding:20px;background-image:radial-gradient(circle at top, rgba(0,238,255,0.08) 0%, transparent 50%)}
+        .container{max-width:800px;margin:0 auto}
+        h1{color:var(--neon);text-align:center;margin-bottom:35px;font-size:2.3rem;letter-spacing:2px;text-shadow:0 0 12px var(--destaque), 0 0 25px rgba(0,238,255,0.4)}
+        h2,h3{color:var(--neon);margin-bottom:18px;font-weight:600;text-shadow:0 0 8px rgba(255,255,255,0.3)}
+
+        /* Tela de Login */
+        #tela-login{position:fixed;inset:0;background:rgba(5,5,5,0.96);display:flex;align-items:center;justify-content:center;z-index:999}
+        .login-box{background:var(--caixa);padding:45px 35px;border-radius:12px;width:90%;max-width:420px;border:1px solid var(--destaque);box-shadow:0 0 20px var(--destaque), inset 0 0 15px rgba(0,238,255,0.05)}
+        .login-box h2{text-align:center;margin-bottom:25px;font-size:1.8rem}
+        input,select,button{width:100%;padding:14px;margin:8px 0;border:none;border-radius:8px;font-size:16px;transition:all 0.25s ease}
+        input,select{background:#111;color:var(--neon);border:1px solid var(--borda)}
+        select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2300eeff' d='M1.41 0L6 4.59 10.59 0 12 1.41 6 7.41 0 1.41z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
+        input:focus,select:focus{outline:none;border-color:var(--destaque);box-shadow:0 0 10px var(--destaque)}
+        button{background:transparent;color:var(--neon);border:1px solid var(--destaque);font-weight:700;cursor:pointer}
+        button:hover{background:var(--destaque);color:#000;box-shadow:0 0 15px var(--destaque);transform:translateY(-1px)}
+        #erro-senha{color:var(--erro);text-align:center;margin-top:12px;display:none;text-shadow:0 0 8px var(--erro)}
+
+        select option{background:#111;color:#fff;padding:12px}
+        select option:checked{background:var(--destaque);color:#000;font-weight:bold}
+
+        /* Cabeçalho */
+        #conteudo{display:none}
+        .cabecalho{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:15px;margin-bottom:30px;padding-bottom:15px;border-bottom:1px solid var(--borda)}
+        .qtd-contas{font-size:1.15rem;font-weight:600;text-shadow:0 0 8px var(--destaque)}
+        .grupo-botoes{display:flex;gap:10px;flex-wrap:wrap}
+        .btn-sair{border-color:var(--erro);color:var(--erro);width:auto;padding:10px 18px;margin:0}
+        .btn-sair:hover{background:var(--erro);color:#fff;box-shadow:0 0 12px var(--erro)}
+        .btn-limpar-tudo{border-color:#ff6666;color:#ff6666;width:auto;padding:10px 18px;margin:0}
+        .btn-limpar-tudo:hover{background:#ff3333;color:#fff;box-shadow:0 0 12px #ff3333;border-color:#ff3333}
+        .btn-visualizar{border-color:var(--sucesso);color:var(--sucesso);width:auto;padding:10px 18px;margin:0}
+        .btn-visualizar:hover{background:var(--sucesso);color:#000;box-shadow:0 0 12px var(--sucesso);border-color:var(--sucesso)}
+
+        /* Formulário */
+        .form-add{background:var(--caixa);padding:28px;border-radius:12px;margin-bottom:30px;border:1px solid var(--borda);box-shadow:0 0 12px rgba(0,238,255,0.08)}
+
+        /* Lista um em cima do outro */
+        .area-visualizar{display:none;background:var(--caixa);padding:28px;border-radius:12px;border:1px solid var(--borda);box-shadow:0 0 12px rgba(0,238,255,0.08)}
+        .area-visualizar.visivel{display:block}
+        .item-conta{background:rgba(255,255,255,0.02);border:1px solid var(--borda);border-radius:10px;padding:18px;margin-bottom:15px;transition:.2s}
+        .item-conta:hover{border-color:var(--destaque);box-shadow:0 0 10px rgba(0,238,255,0.1)}
+        .item-conta p{margin:6px 0;font-size:15px}
+        .item-conta strong{color:var(--destaque);display:inline-block;width:130px}
+        .item-acoes{margin-top:12px;padding-top:12px;border-top:1px solid var(--borda)}
+        .item-acoes button{width:auto;padding:8px 14px;margin:0 4px 0 0;font-size:14px}
+        .btn-editar{border-color:#00aaff;color:#00aaff}
+        .btn-editar:hover{background:#00aaff;color:#000;box-shadow:0 0 10px #00aaff}
+        .btn-excluir{border-color:var(--erro);color:var(--erro)}
+        .btn-excluir:hover{background:var(--erro);color:#fff;box-shadow:0 0 10px var(--erro)}
+        .vazio{text-align:center;padding:40px;color:#666}
+
+        @media(max-width:600px){
+            .item-conta strong{width:100%;display:block;margin-bottom:2px}
+            .cabecalho{justify-content:center;text-align:center}
+        }
+    </style>
+</head>
+<body>
+    <div id="tela-login">
+        <div class="login-box">
+            <h2>🔒 FSN</h2>
+            <input type="password" id="senha-acesso" placeholder="Digite a senha">
+            <button onclick="verificarSenha()">ENTRAR</button>
+            <p id="erro-senha">Senha incorreta!</p>
+        </div>
+    </div>
+
+    <div class="container" id="conteudo">
+        <h1>📦 FSN</h1>
+        
+        <div class="cabecalho">
+            <div class="qtd-contas">📊 Total: <span id="total-contas">0</span> contas</div>
+            <div class="grupo-botoes">
+                <button class="btn-visualizar" onclick="alternarVisualizacao()">👁️ ESTOQUE</button>
+                <button class="btn-limpar-tudo" onclick="limparTodoEstoque()">🗑️ LIMPAR</button>
+                <button class="btn-sair" onclick="sair()">🚪 SAIR</button>
+            </div>
+        </div>
+
+        <div class="form-add">
+            <h3>➕ ADICIONAR</h3>
+            <select id="servidor" required>
+                <option value="">Selecione o Servidor</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+            </select>
+            <input type="email" id="email-discord" placeholder="E-mail Discord" required>
+            <input type="password" id="senha-conta" placeholder="Senha da Conta" required>
+            <input type="text" id="conta" placeholder="Nick da Conta">
+            <button onclick="salvarConta()">✅ SALVAR</button>
+        </div>
+
+        <div class="area-visualizar" id="area-estoque">
+            <h3>📋 ESTOQUE</h3>
+            <div id="lista-contas"></div>
+        </div>
+    </div>
+
+<script>
+const SENHA_PERMITIDA = "fsn2024";
+let contas = JSON.parse(localStorage.getItem("estoque_fsn")) || [];
+
+// Carrega a lista ao abrir
+atualizarLista();
+
+function verificarSenha(){
+    const senha = document.getElementById("senha-acesso").value;
+    if(senha === SENHA_PERMITIDA){
+        document.getElementById("tela-login").style.display = "none";
+        document.getElementById("conteudo").style.display = "block";
+        atualizarLista();
+    }else{
+        document.getElementById("erro-senha").style.display = "block";
+    }
+}
+
+function sair(){
+    document.getElementById("tela-login").style.display = "flex";
+    document.getElementById("conteudo").style.display = "none";
+    document.getElementById("senha-acesso").value = "";
+    document.getElementById("erro-senha").style.display = "none";
+}
+
+function limparTodoEstoque(){
+    if(confirm("⚠️ APAGAR TODAS AS CONTAS? Essa ação não tem volta!")){
+        contas = [];
+        salvarNoStorage();
+        atualizarLista();
+        alert("✅ Estoque apagado com sucesso!");
+    }
+}
+
+function alternarVisualizacao(){
+    document.getElementById("area-estoque").classList.toggle("visivel");
+}
+
+function salvarConta(){
+    // Pegando os valores CORRETOS dos campos
+    const servidor = document.getElementById("servidor").value.trim();
+    const emailDiscord = document.getElementById("email-discord").value.trim();
+    const senha = document.getElementById("senha-conta").value.trim();
+    const nick = document.getElementById("conta").value.trim();
+
+    // Validação completa
+    if(!servidor){
+        alert("❌ Selecione um servidor!");
+        return;
+    }
+    if(!emailDiscord){
+        alert("❌ Preencha o e-mail do Discord!");
+        return;
+    }
+    if(!senha){
+        alert("❌ Preencha a senha da conta!");
+        return;
+    }
+
+    // Adiciona a conta com todos os dados
+    contas.push({servidor, emailDiscord, senha, nick});
+    salvarNoStorage();
+    limparFormulario();
+    atualizarLista();
+    document.getElementById("area-estoque").classList.add("visivel");
+    alert("✅ Conta salva no estoque com sucesso!");
+}
+
+function limparFormulario(){
+    document.getElementById("servidor").value = "";
+    document.getElementById("email-discord").value = "";
+    document.getElementById("senha-conta").value = "";
+    document.getElementById("conta").value = "";
+}
+
+function salvarNoStorage(){
+    localStorage.setItem("estoque_fsn", JSON.stringify(contas));
+}
+
+function atualizarLista(){
+    const lista = document.getElementById("lista-contas");
+    document.getElementById("total-contas").textContent = contas.length;
+    lista.innerHTML = "";
+    
+    if(contas.length === 0){
+        lista.innerHTML = `<div class="vazio">📭 Nenhuma conta cadastrada ainda</div>`;
+        return;
+    }
+
+    contas.forEach((conta, indice) => {
+        const item = document.createElement("div");
+        item.className = "item-conta";
+        item.innerHTML = `
+            <p><strong>SERVIDOR:</strong> ${conta.servidor}</p>
+            <p><strong>E-MAIL:</strong> ${conta.emailDiscord}</p>
+            <p><strong>SENHA:</strong> ${conta.senha}</p>
+            <p><strong>NICK:</strong> ${conta.nick || "Não informado"}</p>
+         
+            <div class="item-acoes">
+                <button class="btn-editar" onclick="editarConta(${indice})">✏️ Editar</button>
+                <button class="btn-excluir" onclick="excluirConta(${indice})">🗑️ Excluir</button>
+            </div>
+        `;
+        lista.appendChild(item);
+    });
+}
+
+function excluirConta(indice){
+    if(confirm("Tem certeza que quer apagar essa conta do estoque?")){
+        contas.splice(indice, 1);
+        salvarNoStorage();
+        atualizarLista();
+    }
+}
+
+function editarConta(indice){
+    const conta = contas[indice];
+    // Preenche o formulário com os dados corretos
+    document.getElementById("servidor").value = conta.servidor;
+    document.getElementById("email-discord").value = conta.emailDiscord;
+    document.getElementById("senha-conta").value = conta.senha;
+    document.getElementById("conta").value = conta.nick || "";
+    
+    // Remove a conta antiga para salvar a nova alterada
+    contas.splice(indice, 1);
+    salvarNoStorage();
+    atualizarLista();
+    document.getElementById("area-estoque").classList.add("visivel");
+    window.scrollTo({top:0, behavior:'smooth'});
+}
+
+// Permite apertar Enter para logar
+document.getElementById("senha-acesso").addEventListener("keydown", (e) => {
+    if(e.key === "Enter") verificarSenha();
+});
+</script>
+</body>
+</html>
